@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lieferschein - Sonderfarbe</title>
+    <script src="js/jspdf.umd.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="img/aluterr-favicon.ico">
+
+    <script defer src="js/config.js"></script>
+    <script defer src="js/header.js"></script>
+    <script defer src="js/body.js"></script>
+    <script defer src="js/eventListener.js"></script>
+    <script defer src="js/footer.js"></script>
+
+</head>
+
+<body>
+    <img id="logo-top-left" src="img/Aluterr-Logo.png" alt="Aluterr Logo">
+
+
+    <h1>Lieferschein - Sonderfarbe</h1>
+    <div class="form-group">
+        <label for="company-select">Empfänger wählen:</label>
+        <select id="company-select">
+            <option value="esp">ESP Pulverbeschichtung GmbH</option>
+            <option value="wirth">Wirth GmbH</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="commission-input">Kommission:</label>
+        <input id="commission-input" type="text" value="AT-" />
+    </div>
+
+    <div class="form-group">
+        <label for="color-select">Farbe auswählen:</label>
+        <select id="color-select"></select>
+    </div>
+
+    <div class="form-group">
+        <label for="color-custom">Weitere Farbe hinzufügen:</label>
+        <input type="text" id="color-custom" placeholder="Neue Farbe eingeben" />
+        <button id="add-color-btn">Hinzufügen</button>
+    </div>
+
+
+    <h3>Profile auswählen</h3>
+
+    <div class="form-group" style="position: relative;">
+        <input type="text" id="profile-search" placeholder="Profil suchen..." autocomplete="off" />
+        <div id="profile-search-results"></div>
+    </div>
+
+
+    <div id="profile-section"></div>
+
+    <div>
+        <button onclick="addProfileRow()">+ Weitere Position hinzufügen</button>
+
+        <input type="button" value="PDF Datei erstellen" onclick="generatePDF()" />
+    </div>
+
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>© 2025 Aluterr GmbH</span>
+            <a href="https://aluterr.de/impressum" target="_blank" rel="noopener">Impressum</a>
+            <a href="https://aluterr.de/hilfe-infos/datenschutzerklarung" target="_blank"
+                rel="noopener">Datenschutzerklärung</a>
+        </div>
+    </footer>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,236 @@
+/* Reset & Basis */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f7f9;
+  color: #333;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Logo */
+#logo-top-left {
+  width: 300px;
+  height: auto;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* Container für Formularelemente */
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, label {
+    color: #2c3e50;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+/* Inputs und Selects - gleiche Optik */
+input[type="text"],
+select {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline-offset: 2px;
+  background-color: white;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 8px rgba(41, 128, 185, 0.4);
+}
+
+/* Fehlerzustand */
+.input-error {
+  border-color: #e74c3c !important;
+  background-color: #fdecea !important;
+  animation: flash-red 0.6s ease-in-out;
+}
+
+/* Buttons */
+button, input[type="button"] {
+  padding: 12px 25px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #2980b9;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  align-self: flex-start;
+  user-select: none;
+}
+
+button:hover, input[type="button"]:hover {
+  background-color: #1c5980;
+}
+
+/* Profile Search & Results */
+#profile-search {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1.8px solid #ccc;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+#profile-search-results {
+  border: 1.8px solid #2980b9;
+  border-top: none;
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  width: 600px;
+  background: white;
+  z-index: 100;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: none;
+  margin-top: 40px;
+}
+
+#profile-search-results div {
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Profil Details Styles */
+.profile-row {
+
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.profile-anzahl,
+.profile-laenge,
+.profile-unit {
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 1rem;
+}
+
+.profile-laenge {
+  width: 80px;
+}
+
+.profile-anzahl {
+  width: 6%;
+  width: 80px;
+}
+
+.profile-unit {
+  width: 90px;
+}
+
+/* Spacing & Layout für Sections */
+h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+br {
+  margin-bottom: 20px;
+}
+
+/* Animation für Input-Fehler */
+@keyframes flash-red {
+  0%, 100% { border-color: #e74c3c; }
+  50% { border-color: #c0392b; }
+}
+
+/* Responsive */
+@media (max-width: 650px) {
+  #profile-search-results,
+  #profile-search {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+table {
+  width: 100%;
+}
+
+/* Überschriften der Tabelle */
+table td {
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 8px 12px;
+  background-color: #f4f7f9; /* passend zum Body-Hintergrund */
+  /* border-bottom: 2px solid #ccc; */
+  color: #2c3e50;
+}
+
+/* Labels bei den Formularfeldern */
+label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  display: block;
+  user-select: none;
+}
+
+/* Überschrift des Profile-Bereichs */
+h3 {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  user-select: none;
+}
+
+.site-footer {
+  margin-top: 40px;
+  padding: 20px 0;
+  /* background-color: #ecf0f1; */
+  width: 100%;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  border-top: 1px solid #ccc;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.site-footer a {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+  color: #1c5980;
+}
