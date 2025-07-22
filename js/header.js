@@ -147,6 +147,13 @@ function addPageNumbers(doc) {
 }
 
 function savePDF(doc) {
-  const title = document.getElementById("commission-input")?.value.trim() || 'unbenannt';
-  doc.save(`lieferschein-${title}.pdf`);
+  let title = document.getElementById("commission-input")?.value.trim() || 'unbenannt';
+  const deliveryNoteTitle= `lieferschein-${title}.pdf`
+  doc.save(deliveryNoteTitle);
+  afterPdfGenerated(deliveryNoteTitle)
+}
+function afterPdfGenerated(deliveryNoteTitle) {
+    const randomId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung/${deliveryNoteTitle}-${randomId}/`;
+    window.open(newUrl, '_blank');
 }
