@@ -191,9 +191,6 @@ async function savePDF(doc) {
     const result = await saveDataToServer(data);
     console.log("Antwort vom Backend mit Key:", result.key);
 
-
-
-    // Neuer Tab mit Key in URL
     const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung?key=${result.key}`;
     console.log("Öffne neuen Tab mit URL:", newUrl);
     window.open(newUrl, '_blank');
