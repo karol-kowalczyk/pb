@@ -146,14 +146,59 @@ function addPageNumbers(doc) {
   }
 }
 
-function savePDF(doc) {
-  let title = document.getElementById("commission-input")?.value.trim() || 'unbenannt';
-  const deliveryNoteTitle= `lieferschein-${title}.pdf`
-  doc.save(deliveryNoteTitle);
-  afterPdfGenerated(deliveryNoteTitle)
+const BASE_URL = 'https://at-backend.aluterr-softwareprojekte.de';
+
+// Speichern der Daten via POST /save/
+async function saveDataToServer(data) {
+  const response = await fetch(`${BASE_URL}/save/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error('Speichern fehlgeschlagen: ' + JSON.stringify(err));
+  }
+  return await response.json(); // { key: "..." }
 }
-function afterPdfGenerated(deliveryNoteTitle) {
-    const randomId = Math.random().toString(36).substring(2, 10).toUpperCase();
-    const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung/${deliveryNoteTitle}-${randomId}/`;
+
+// PDF speichern & Daten speichern, dann neuen Tab mit Key öffnen
+async function savePDF(doc) {
+  let kommission = document.getElementById("commission-input")?.value.trim() || 'unbenannt';
+  const deliveryNoteTitle = `lieferschein-${kommission}.pdf`;
+
+  doc.save(deliveryNoteTitle);
+
+  const data = {
+    kommission,
+    datum: getTodayDateString(),
+    empfaenger: document.getElementById("company-select")?.value,
+    ansprechpartner: "Herr Holda",
+    mail: "einkauf@aluterr.de",
+    telefon: "+49 2041 7529132",
+    farbe: document.getElementById("color-select")?.value || "",
+    positionen: [...document.querySelectorAll(".profile-row")].map(row => ({
+      produktnummer: row.querySelector(".profile-select")?.value,
+      anzahl: row.querySelector(".profile-anzahl")?.value,
+      laenge: row.querySelector(".profile-laenge")?.value,
+      einheit: row.querySelector(".profile-unit")?.value
+    }))
+  };
+
+  console.log("Daten zum Speichern:", data);
+
+  try {
+    const result = await saveDataToServer(data);
+    console.log("Antwort vom Backend mit Key:", result.key);
+
+
+
+    // Neuer Tab mit Key in URL
+    const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung?key=${result.key}`;
+    console.log("Öffne neuen Tab mit URL:", newUrl);
     window.open(newUrl, '_blank');
+  } catch (error) {
+    console.error("Fehler beim Speichern:", error);
+    alert("Speichern fehlgeschlagen: " + error.message);
+  }
 }

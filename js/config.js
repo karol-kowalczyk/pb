@@ -197,3 +197,61 @@ const resultsContainer = document.getElementById("profile-search-results");
 const colorSelect = document.getElementById('color-select');
 const colorCustomInput = document.getElementById('color-custom');
 const addColorBtn = document.getElementById('add-color-btn');
+
+async function loadDataFromServer(key) {
+  const response = await fetch(`${BASE_URL}/load/${key}/`);
+  if (!response.ok) {
+    throw new Error('Daten nicht gefunden');
+  }
+  return await response.json();
+}
+
+// DOMContentLoaded Event für Laden der Daten bei ?key=...
+window.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get("key");
+  console.log("Geladener Key aus URL:", key);
+
+  if (!key) {
+    console.warn("Kein Key in URL");
+    return;
+  }
+
+  let data;
+  try {
+    data = await loadDataFromServer(key);
+    console.log("Geladene Daten vom Backend:", data);
+  } catch (e) {
+    console.warn("Keine gespeicherten Daten gefunden für:", key);
+    return;
+  }
+
+  // Formularfelder befüllen
+  document.getElementById("commission-input").value = data.kommission || "";
+  document.getElementById("company-select").value = data.empfaenger || "";
+  document.getElementById("color-select").value = data.farbe || "";
+
+  // Farb-Dropdown ggf. anpassen
+  const colorSelect = document.getElementById("color-select");
+  if (data.farbe && !Array.from(colorSelect.options).some(opt => opt.value === data.farbe)) {
+    const customOption = document.createElement("option");
+    customOption.value = data.farbe;
+    customOption.textContent = data.farbe;
+    colorSelect.appendChild(customOption);
+    colorSelect.value = data.farbe;
+  }
+
+  // Positionen einfügen
+  if (Array.isArray(data.positionen)) {
+    data.positionen.forEach(pos => {
+      addProfileRow(); // Funktion von dir, neue Zeile erzeugen
+      const lastRow = document.querySelectorAll(".profile-row");
+      const row = lastRow[lastRow.length - 1];
+
+      row.querySelector(".profile-select").value = pos.produktnummer;
+      row.querySelector(".profile-anzahl").value = pos.anzahl;
+      row.querySelector(".profile-laenge").value = pos.laenge;
+      row.querySelector(".profile-unit").value = pos.einheit;
+    });
+  }
+});

@@ -64,10 +64,9 @@ function populateProfileSelect(selectElement) {
   });
 }
 
-// remove profile row
 function removeProfileRow(button) {
-  const row = button.parentElement;
-  row.remove();
+  const row = button.closest(".profile-row");
+  if (row) row.remove();
 }
 
 function preselectProfile(selectElement, productID) {
