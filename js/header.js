@@ -98,24 +98,34 @@ function drawRightFields(doc, x, startY, spacing = 5) {
 }
 
 async function generatePDF() {
-  const doc = new jsPDF();
+  try {
+    showLoading(); // ⬅️ Spinner AN
 
-  const logoPos = { x: 15, y: 15, width: 90, height: 20 };
-  await drawHeaderWithLogo(doc, logoPos);
+    const doc = new jsPDF();
 
-  const contentY = logoPos.y + logoPos.height + 15;
-  await preloadImages();
+    const logoPos = { x: 15, y: 15, width: 90, height: 20 };
+    await drawHeaderWithLogo(doc, logoPos);
 
-  const addressX = 20;
-  const rightX = 120;
-  const addressLines = getSelectedAddress();
+    const contentY = logoPos.y + logoPos.height + 15;
+    await preloadImages();
 
-  drawMainContent(doc, addressLines, addressX, rightX, contentY);
-  drawFooter(doc);
-  addPageNumbers(doc);
-  savePDF(doc);
+    const addressX = 20;
+    const rightX = 120;
+    const addressLines = getSelectedAddress();
 
+    drawMainContent(doc, addressLines, addressX, rightX, contentY);
+    drawFooter(doc);
+    addPageNumbers(doc);
+    await savePDF(doc);
+
+  } catch (error) {
+    console.error("Fehler bei PDF-Erstellung:", error);
+    alert("Fehler bei der PDF-Erstellung: " + error.message);
+  } finally {
+    hideLoading(); // ⬅️ Spinner AUS, egal ob Erfolg oder Fehler
+  }
 }
+
 
 async function drawHeaderWithLogo(doc, { x, y, width, height }) {
   try {
@@ -185,17 +195,34 @@ async function savePDF(doc) {
     }))
   };
 
-  console.log("Daten zum Speichern:", data);
-
   try {
     const result = await saveDataToServer(data);
-    console.log("Antwort vom Backend mit Key:", result.key);
+const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung?key=${result.key}`;
+document.getElementById("link-input").value = newUrl;
+document.getElementById("link-modal").classList.remove("hidden");
 
-    const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung?key=${result.key}`;
-    console.log("Öffne neuen Tab mit URL:", newUrl);
-    window.open(newUrl, '_blank');
+// Kopieren
+document.getElementById("copy-link-btn").onclick = () => {
+  navigator.clipboard.writeText(newUrl)
+    .then(() => alert("Link wurde in die Zwischenablage kopiert!"))
+    .catch(err => alert("Fehler beim Kopieren: " + err));
+};
+
+// Schließen
+document.getElementById("close-modal-btn").onclick = () => {
+  document.getElementById("link-modal").classList.add("hidden");
+};
+
   } catch (error) {
     console.error("Fehler beim Speichern:", error);
     alert("Speichern fehlgeschlagen: " + error.message);
   }
+}
+
+function showLoading() {
+  document.getElementById("loading-overlay").style.display = "flex";
+}
+
+function hideLoading() {
+  document.getElementById("loading-overlay").style.display = "none";
 }
