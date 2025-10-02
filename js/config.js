@@ -251,7 +251,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       row.querySelector(".profile-select").value = pos.produktnummer;
       row.querySelector(".profile-anzahl").value = pos.anzahl;
       row.querySelector(".profile-laenge").value = pos.laenge;
-      row.querySelector(".profile-unit").value = pos.einheit;
+      const unitSelect = row.querySelector(".profile-unit");
+      if (unitSelect) {
+        unitSelect.value = pos.einheit === "Stck" ? "stck" : pos.einheit;
+      }
     });
   }
 });

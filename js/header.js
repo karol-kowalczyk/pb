@@ -219,10 +219,21 @@ document.getElementById("close-modal-btn").onclick = () => {
   }
 }
 
+let previousBodyOverflow = "";
+
 function showLoading() {
-  document.getElementById("loading-overlay").style.display = "flex";
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+
+  previousBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+  overlay.style.display = "flex";
 }
 
 function hideLoading() {
-  document.getElementById("loading-overlay").style.display = "none";
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+
+  overlay.style.display = "none";
+  document.body.style.overflow = previousBodyOverflow;
 }

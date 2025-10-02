@@ -46,7 +46,7 @@ function createProfileRowElement() {
       <input type="number" class="profile-laenge" placeholder="Länge" min="1" value="1000">
       <select class="profile-unit">
         <option value="mm">mm</option>
-        <option value="mm">Stck</option>
+        <option value="stck">Stck</option>
       </select>
       <button onclick="removeProfileRow(this)">Entfernen</button>
     </div>
