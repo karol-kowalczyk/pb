@@ -5,11 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lieferschein - Sonderfarbe</title>
-    <script>
-        if (sessionStorage.getItem('isAuthenticated') !== 'true') {
-            window.location.replace('login.html');
-        }
-    </script>
+
+    <!-- Weiterleitung entfernt -->
     <script src="js/jspdf.umd.min.js"></script>
     <script src="js/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -21,14 +18,10 @@
     <script defer src="js/eventListener.js"></script>
     <script defer src="js/footer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 </head>
 
 <body>
     <img id="logo-top-left" src="img/Aluterr-Logo.png" alt="Aluterr Logo">
-
-    <button id="logout-button" type="button">Abmelden</button>
-
 
     <h1>Lieferschein - Sonderfarbe</h1>
     <div class="form-group">
@@ -55,7 +48,6 @@
         <button id="add-color-btn">Hinzufügen</button>
     </div>
 
-
     <h3>Profile auswählen</h3>
 
     <div class="form-group" style="position: relative;">
@@ -63,15 +55,12 @@
         <div id="profile-search-results"></div>
     </div>
 
-
     <div id="profile-section"></div>
 
     <div>
         <button onclick="addProfileRow()">+ Weitere Position hinzufügen</button>
-
         <input type="button" value="PDF Datei erstellen" onclick="generatePDF()" />
     </div>
-
 
     <footer class="site-footer">
         <div class="footer-content">
@@ -82,29 +71,19 @@
         </div>
     </footer>
 
-<div id="link-modal" class="modal hidden">
-  <div class="modal-content">
-    <p>Der Lieferschein wurde gespeichert.</p> 
-    <p>Link:</p>
-    <input type="text" id="link-input" readonly>
-    <button id="copy-link-btn">📋 Link kopieren</button>
-    <button id="close-modal-btn">✖️ Schließen</button>
-  </div>
-</div>
+    <div id="link-modal" class="modal hidden">
+        <div class="modal-content">
+            <p>Der Lieferschein wurde gespeichert.</p> 
+            <p>Link:</p>
+            <input type="text" id="link-input" readonly>
+            <button id="copy-link-btn">📋 Link kopieren</button>
+            <button id="close-modal-btn">✖️ Schließen</button>
+        </div>
+    </div>
 
-<div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center;">
-  <div class="spinner" style="border:6px solid #ccc; border-top:6px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite;"></div>
-</div>
-
-
+    <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div class="spinner" style="border:6px solid #ccc; border-top:6px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite;"></div>
+    </div>
 </body>
-
-<script>
-    document.getElementById('logout-button')?.addEventListener('click', () => {
-        sessionStorage.removeItem('isAuthenticated');
-        window.location.replace('login.html');
-    });
-</script>
-
 
 </html>

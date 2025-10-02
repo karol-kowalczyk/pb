@@ -119,8 +119,8 @@ async function generatePDF() {
     await savePDF(doc);
 
   } catch (error) {
-    console.error("Fehler bei PDF-Erstellung:", error);
-    alert("Fehler bei der PDF-Erstellung: " + error.message);
+    // console.error("Fehler bei PDF-Erstellung:", error);
+    // alert("Fehler bei der PDF-Erstellung: " + error.message);
   } finally {
     hideLoading(); // ⬅️ Spinner AUS, egal ob Erfolg oder Fehler
   }
@@ -214,8 +214,8 @@ document.getElementById("close-modal-btn").onclick = () => {
 };
 
   } catch (error) {
-    console.error("Fehler beim Speichern:", error);
-    alert("Speichern fehlgeschlagen: " + error.message);
+    // console.error("Fehler beim Speichern:", error);
+    // alert("Speichern fehlgeschlagen: " + error.message);
   }
 }
 
