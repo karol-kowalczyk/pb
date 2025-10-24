@@ -250,10 +250,20 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       row.querySelector(".profile-select").value = pos.produktnummer;
       row.querySelector(".profile-anzahl").value = pos.anzahl;
-      row.querySelector(".profile-laenge").value = pos.laenge;
       const unitSelect = row.querySelector(".profile-unit");
       if (unitSelect) {
         unitSelect.value = pos.einheit === "Stck" ? "stck" : pos.einheit;
+        updateLengthInputMode(row);
+        updateQuantityInputMode(row);
+      }
+      const lengthInput = row.querySelector(".profile-laenge");
+      if (lengthInput) {
+        lengthInput.value = pos.laenge || "";
+      }
+      const quantityInput = row.querySelector(".profile-anzahl");
+      if (quantityInput && pos.anzahl !== undefined) {
+        quantityInput.value = pos.anzahl;
+        updateQuantityInputMode(row);
       }
     });
   }

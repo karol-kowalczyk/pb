@@ -7,6 +7,8 @@ function addProfileRow(selectedProductNumber = "") {
   const row = createProfileRowElement();
   container.appendChild(row);
 
+  setupProfileRow(row);
+
   const select = row.querySelector(".profile-select");
   populateProfileSelect(select);
 
@@ -26,7 +28,7 @@ function ensureProfileHeaderExists(container) {
       <td></td>
       <td>Menge</td>
       <td></td>
-      <td>Länge</td>
+      <td>Länge/Stück</td>
       <td></td>
     </tr>
   `;
@@ -43,7 +45,7 @@ function createProfileRowElement() {
         <option value="">-- Profil auswählen --</option>
       </select>
       <input type="number" class="profile-anzahl" placeholder="Anzahl" min="1" value="1">
-      <input type="number" class="profile-laenge" placeholder="Länge" min="1" value="1000">
+      <input type="number" class="profile-laenge" placeholder="Länge (mm)" min="1" value="1000" inputmode="decimal">
       <select class="profile-unit">
         <option value="mm">mm</option>
         <option value="stck">Stck</option>
@@ -53,6 +55,86 @@ function createProfileRowElement() {
   `;
 
   return row;
+}
+
+function setupProfileRow(row) {
+  const unitSelect = row.querySelector(".profile-unit");
+  if (!unitSelect) return;
+
+  unitSelect.addEventListener("change", () => {
+    updateLengthInputMode(row);
+    updateQuantityInputMode(row);
+  });
+  updateLengthInputMode(row);
+  updateQuantityInputMode(row);
+}
+
+function updateLengthInputMode(row) {
+  const unitSelect = row.querySelector(".profile-unit");
+  const lengthInput = row.querySelector(".profile-laenge");
+
+  if (!unitSelect || !lengthInput) return;
+
+  if (unitSelect.value === "stck") {
+    if (lengthInput.value === "1000") {
+      const trimmed = lengthInput.value.replace(/0+$/, "");
+      lengthInput.value = trimmed || "1";
+    } else if (!lengthInput.value || Number(lengthInput.value) <= 0) {
+      lengthInput.value = "1";
+    }
+    lengthInput.type = "number";
+    lengthInput.setAttribute("min", "1");
+    lengthInput.setAttribute("step", "1");
+    lengthInput.setAttribute("inputmode", "numeric");
+    lengthInput.placeholder = "Stück";
+    lengthInput.classList.add("pieces-mode");
+    lengthInput.dataset.mode = "pieces";
+  } else {
+    lengthInput.type = "number";
+    lengthInput.setAttribute("min", "1");
+    lengthInput.setAttribute("inputmode", "decimal");
+    lengthInput.removeAttribute("step");
+    lengthInput.placeholder = "Länge (mm)";
+    if (!lengthInput.value || !isFinite(Number(lengthInput.value))) {
+      lengthInput.value = "1000";
+    }
+    lengthInput.classList.remove("pieces-mode");
+    lengthInput.dataset.mode = "length";
+  }
+}
+
+function updateQuantityInputMode(row) {
+  const unitSelect = row.querySelector(".profile-unit");
+  const quantityInput = row.querySelector(".profile-anzahl");
+
+  if (!unitSelect || !quantityInput) return;
+
+  if (unitSelect.value === "stck") {
+    if (!quantityInput.dataset.prevValue && quantityInput.value && quantityInput.value !== "-") {
+      quantityInput.dataset.prevValue = quantityInput.value;
+    }
+    quantityInput.type = "text";
+    quantityInput.removeAttribute("min");
+    quantityInput.setAttribute("inputmode", "text");
+    quantityInput.value = "-";
+    quantityInput.readOnly = true;
+    quantityInput.classList.add("pieces-mode");
+  } else {
+    const prevValue = quantityInput.dataset.prevValue;
+    quantityInput.type = "number";
+    quantityInput.setAttribute("min", "1");
+    quantityInput.setAttribute("inputmode", "decimal");
+    quantityInput.readOnly = false;
+    quantityInput.classList.remove("pieces-mode");
+
+    if (prevValue && isFinite(Number(prevValue))) {
+      quantityInput.value = prevValue;
+    } else if (!quantityInput.value || quantityInput.value === "-") {
+      quantityInput.value = "1";
+    }
+
+    delete quantityInput.dataset.prevValue;
+  }
 }
 
 function populateProfileSelect(selectElement) {
@@ -277,7 +359,7 @@ async function drawLieferscheinTable(doc, startY) {
   const rowHeight = 15;
   const maxFirstPageRows = 9;
   const maxOtherPageRows = 13;
-  const headers = ['Pos.', 'Bezeichnung', 'Produkt-Nr.', 'Visualisierung', 'Menge', 'Länge'];
+  const headers = ['Pos.', 'Bezeichnung', 'Produkt-Nr.', 'Visualisierung', 'Menge', 'Länge/Stück'];
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const marginLeft = 15;
@@ -337,8 +419,8 @@ function drawTableHeader(doc, y, colX, headers, rowHeight, marginLeft, pageWidth
 
 function extractProfileData(row) {
   const select = row.querySelector(".profile-select");
-  const quantity = row.querySelector(".profile-anzahl")?.value;
-  const length = row.querySelector(".profile-laenge")?.value;
+  const quantity = row.querySelector(".profile-anzahl")?.value?.trim() || "";
+  const length = row.querySelector(".profile-laenge")?.value?.trim() || "";
   const unit = row.querySelector(".profile-unit")?.value;
   const productID = select?.value;
 
@@ -367,8 +449,40 @@ function drawProfileRow(doc, data, position, colX, y) {
     doc.text('Kein Bild', colX[3], y);
   }
 
-  doc.text(data.quantity, colX[4], y);
-  doc.text(`${data.length} ${data.unit}`, colX[5], y);
+  const quantityText = formatQuantityForPdf(data);
+  doc.text(quantityText, colX[4], y);
+
+  const lengthText = formatLengthForPdf(data);
+  doc.text(lengthText, colX[5], y);
+}
+
+function formatLengthForPdf(data) {
+  if (!data.length) return "";
+
+  if (data.unit === "stck") {
+    const piecesText = formatPiecesList(data.length);
+    return piecesText ? `${piecesText} Stück` : "Stück";
+  }
+
+  const unitLabel = data.unit === "stck" ? "" : data.unit;
+  return unitLabel ? `${data.length} ${unitLabel}` : data.length;
+}
+
+function formatQuantityForPdf(data) {
+  if (data.unit === "stck") {
+    return "-";
+  }
+
+  return data.quantity || "";
+}
+
+function formatPiecesList(rawValue) {
+  const pieces = rawValue
+    .split(/[\s,;\n]+/)
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  return pieces.length ? pieces.join(", ") : "";
 }
 
 function drawFooter(doc, pageNum, pageCount) {

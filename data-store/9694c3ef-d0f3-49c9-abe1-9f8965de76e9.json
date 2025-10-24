@@ -1,0 +1,27 @@
+{
+  "key": "9694c3ef-d0f3-49c9-abe1-9f8965de76e9",
+  "createdAt": "2025-10-24T21:03:37.910Z",
+  "payload": {
+    "kommission": "AT-",
+    "datum": "24.10.2025",
+    "empfaenger": "esp",
+    "ansprechpartner": "Herr Holda",
+    "mail": "einkauf@aluterr.de",
+    "telefon": "+49 2041 7529132",
+    "farbe": "Graualuminium (Tiger 29/90147) RAL 9007",
+    "positionen": [
+      {
+        "produktnummer": "ALU-ABDKA",
+        "anzahl": "1",
+        "laenge": "1000",
+        "einheit": "mm"
+      },
+      {
+        "produktnummer": "ALU-ABS-PAN",
+        "anzahl": "-",
+        "laenge": "3",
+        "einheit": "stck"
+      }
+    ]
+  }
+}

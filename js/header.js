@@ -156,7 +156,53 @@ function addPageNumbers(doc) {
   }
 }
 
-const BASE_URL = 'https://at-backend.aluterr-softwareprojekte.de';
+const PROD_FRONTEND_HOSTS = [
+  'aluterr-softwareprojekte.de',
+  'lieferschein.hact-it.de'
+];
+
+const isProdHost = PROD_FRONTEND_HOSTS.some(host => window.location.hostname.includes(host));
+
+const PROD_BACKEND_URL = 'https://at-backend.aluterr-softwareprojekte.de';
+const LOCAL_BACKEND_URL = 'http://localhost:3000';
+
+const PROD_SHARE_URL = 'https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung';
+const ALT_PROD_SHARE_URL = 'https://lieferschein.hact-it.de';
+
+const BASE_URL = isProdHost
+  ? PROD_BACKEND_URL
+  : LOCAL_BACKEND_URL;
+
+function buildShareLink(key) {
+  if (isProdHost) {
+    const origin = window.location.origin;
+    const path = window.location.pathname.replace(/\/index\.html$/, '/');
+
+    if (origin.includes('aluterr-softwareprojekte.de')) {
+      return `${PROD_SHARE_URL}?key=${key}`;
+    }
+
+    if (origin.includes('lieferschein.hact-it.de')) {
+      const normalizedPath = path.endsWith('/') ? path : `${path}/`;
+      return `${origin}${normalizedPath}?key=${key}`;
+    }
+
+    return `${origin}${path}?key=${key}`;
+  }
+
+  const origin = window.location.origin && window.location.origin !== 'null'
+    ? window.location.origin
+    : null;
+
+  if (origin && origin.startsWith('http')) {
+    const path = window.location.pathname || '/index.html';
+    const normalizedPath = /index\.html$/.test(path) ? path : `${path.replace(/\/$/, '')}/index.html`;
+    return `${origin}${normalizedPath}?key=${key}`;
+  }
+
+  const base = window.location.href.replace(/[#?].*$/, '');
+  return `${base}?key=${key}`;
+}
 
 // Speichern der Daten via POST /save/
 async function saveDataToServer(data) {
@@ -197,21 +243,8 @@ async function savePDF(doc) {
 
   try {
     const result = await saveDataToServer(data);
-const newUrl = `https://aluterr-softwareprojekte.de/lieferscheine-pulverbeschichtung?key=${result.key}`;
-document.getElementById("link-input").value = newUrl;
-document.getElementById("link-modal").classList.remove("hidden");
-
-// Kopieren
-document.getElementById("copy-link-btn").onclick = () => {
-  navigator.clipboard.writeText(newUrl)
-    .then(() => alert("Link wurde in die Zwischenablage kopiert!"))
-    .catch(err => alert("Fehler beim Kopieren: " + err));
-};
-
-// Schließen
-document.getElementById("close-modal-btn").onclick = () => {
-  document.getElementById("link-modal").classList.add("hidden");
-};
+    const newUrl = buildShareLink(result.key);
+    openLinkModal(newUrl);
 
   } catch (error) {
     // console.error("Fehler beim Speichern:", error);
@@ -236,4 +269,69 @@ function hideLoading() {
 
   overlay.style.display = "none";
   document.body.style.overflow = previousBodyOverflow;
+}
+
+const linkModal = document.getElementById("link-modal");
+const linkInput = document.getElementById("link-input");
+const copyLinkBtn = document.getElementById("copy-link-btn");
+const closeModalBtn = document.getElementById("close-modal-btn");
+
+let currentShareLink = "";
+let linkCopied = false;
+
+function openLinkModal(url) {
+  if (!linkModal || !linkInput) return;
+
+  currentShareLink = url;
+  linkCopied = false;
+
+  linkInput.value = url;
+  linkModal.classList.remove("hidden");
+
+  if (closeModalBtn) {
+    closeModalBtn.disabled = true;
+    closeModalBtn.title = "Bitte zuerst den Link kopieren";
+  }
+}
+
+function closeLinkModal() {
+  if (!linkModal) return;
+
+  linkModal.classList.add("hidden");
+  if (closeModalBtn) {
+    closeModalBtn.disabled = false;
+    closeModalBtn.removeAttribute("title");
+  }
+}
+
+if (copyLinkBtn) {
+  copyLinkBtn.addEventListener("click", async () => {
+    if (!currentShareLink) return;
+    try {
+      await navigator.clipboard.writeText(currentShareLink);
+      linkCopied = true;
+      if (closeModalBtn) {
+        closeModalBtn.disabled = false;
+        closeModalBtn.removeAttribute("title");
+      }
+      alert("Link wurde in die Zwischenablage kopiert! Du kannst das Fenster jetzt schließen.");
+    } catch (err) {
+      linkCopied = false;
+      if (closeModalBtn) {
+        closeModalBtn.disabled = false;
+        closeModalBtn.removeAttribute("title");
+      }
+      alert("Fehler beim Kopieren: " + err);
+    }
+  });
+}
+
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", () => {
+    if (!linkCopied) {
+      alert("Bitte kopiere zuerst den Link über den Kopieren-Button.");
+      return;
+    }
+    closeLinkModal();
+  });
 }
